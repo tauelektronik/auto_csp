@@ -1,0 +1,153 @@
+<cardserv-proxy ver="0.1">
+
+<ca-profiles>
+<default-des-key>01 02 03 04 05 06 07 08 09 10 11 12 13 14</default-des-key>
+
+<extended-newcamd listen-port="15200" debug="false"/>
+
+<profile name="NETRJ" ca-id="1802" network-id="0020" provider-idents="00 00 00, 00 38 11, 00 39 11" enabled="true" debug="false">
+<newcamd listen-port="22000">
+<no-validation>true</no-validation>
+</newcamd>
+
+<services-file>etc/services</services-file>
+
+<max-cw-wait>9500 ms</max-cw-wait>
+</profile>
+</ca-profiles>
+
+<logging log-ecm="false" log-emm="false" log-zapping="false" hide-ip-addresses="false">
+<log-file rotate-count="0" rotate-max-size="0">log/cardserv.log</log-file>
+<log-level>OFF</log-level>
+<silent>true</silent>
+<debug>false</debug>
+</logging>
+  
+<rmi>
+<display-name>....::: ((( Digital ))) :::....</display-name>
+<status-web>
+<listen-port>35000</listen-port>
+<ssl enabled="false"> 
+<keystore password="92=0tprowetu05tu">etc/csp_keystore</keystore>
+</ssl>
+<war-file>lib/cs-status.war</war-file>
+<super-users>admin</super-users>
+</status-web>
+</rmi>  
+
+<user-manager class="com.bowman.cardserv.SimpleUserManager">
+<auth-config>  
+
+<user name="admin" password="secret" max-connections="3" admin="true"/>
+  
++----------------------------------------------------------------------------------------------------+
+  # INICIO DOS CLIENTES
++----------------------------------------------------------------------------------------------------+ 
+  
+  
++----------------------------------------------------------------------------------------------------+
+  # FIM DOS CONECTORES 
++----------------------------------------------------------------------------------------------------+
+
+</auth-config>
+</user-manager>
+
+<connection-manager>
+<reconnect-interval>60</reconnect-interval>
+<default-des-key>01 02 03 04 05 06 07 08 09 10 11 12 13 14</default-des-key>
+<default-keepalive-interval>55</default-keepalive-interval>
+
+<service-map>
+<mapper>         
+<auto-reset-threshold>20</auto-reset-threshold> 
+</mapper>
+
+<mapper profile="NETRJ">
+  
+<enabled>true</enabled>  
+ 
+<auto-map-services>false</auto-map-services>  
+
+<reset-services></reset-services>
+<block-services></block-services>
+  
+<log-missing-sid>false</log-missing-sid>  
+
+</mapper>
+</service-map>
+
+<cws-connectors>
+
++----------------------------------------------------------------------------------------------------+
+  # INICIO DOS CONECTORES 
++----------------------------------------------------------------------------------------------------+
+
+
+
+
+
++----------------------------------------------------------------------------------------------------+
+  # FIM DOS CONECTORES 
++----------------------------------------------------------------------------------------------------+      
+            
+</cws-connectors>
+    
+</connection-manager>
+
+<proxy-plugins>
+<plugin class="com.bowman.cardserv.LoggingPlugin" enabled="false">
+<plugin-config>
+<log-dir></log-dir>
+<log-level>OFF</log-level>
+<ip-filter>*</ip-filter>
+</plugin-config>
+</plugin>
+<plugin class="com.bowman.cardserv.DcwFilterPlugin" enabled="true" jar-file="dcwfilterplugin.jar"/>
+<plugin class="com.bowman.cardserv.CacheCoveragePlugin" enabled="true" jar-file="cachecoverageplugin.jar">
+<plugin-config>
+  
+<profiles>NET</profiles>
+<cache-context network-id="0020" ca-id="1802" interval="10" hide-expired="true"/>   
+  
+</plugin-config>
+</plugin>
+</proxy-plugins>
+ 
+<cache-handler class="com.bowman.cardserv.ClusteredCache">
+<cache-config>
+<debug>false</debug>
+
+<cw-max-age>19</cw-max-age>
+<max-cache-wait>6</max-cache-wait>
+
+<local-host>localhost</local-host>   
+<local-port>54222</local-port>
+  
+#<tracker-url>file:///usr/local/csp/cache/cluster</tracker-url>  
+  
+<tracker-update>60</tracker-update> 
+
+<sync-period>0</sync-period>
+
+<hide-names>true</hide-names>
+<debug>false</debug>  
+<auto-add-peers>false</auto-add-peers> 
+  
+<cw-validation checksum="true" zero-counting="true" log-warnings="false" require-id="true" detect-links="true" force-continuity="true">
+
+<bad-dcw>B1 55 32 38 72 44 06 BC 0E 2B 63 9C 09 95 48 E6</bad-dcw>
+<bad-dcw>00 00 00 00 00 00 3C 3C 00 00 00 00 00 00 3C 3C</bad-dcw>
+<bad-dcw>00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</bad-dcw>
+<bad-dcw>00 01 00 00 05 00 04 24 00 00 D3 00 00 BE 1F 56</bad-dcw> 
+<bad-dcw>01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16</bad-dcw>
+<bad-dcw>01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10</bad-dcw>
+<bad-dcw>25 11 00 36 00 00 00 00 00 00 00 00 00 00 00 00</bad-dcw>
+<bad-dcw>00 00 00 00 00 00 00 00 25 11 00 36 00 00 00 00</bad-dcw>
+<bad-dcw>36 4F 5E E3 24 2A 23 71 57 50 5D 04 27 EF 28 3E</bad-dcw>
+<bad-dcw>64 86 00 EA 91 71 65 67 1F CE FE EB B1 CC 07 84</bad-dcw>
+
+</cw-validation>
+</cache-config>
+</cache-handler>
+
+</cardserv-proxy> 

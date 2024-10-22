@@ -1,0 +1,16 @@
+230316 01:30:32.133 INFO -> Starting plugin: CacheCoveragePlugin - Assists with cache monitoring and propagation.
+230316 01:30:32.158 INFO -> Starting plugin: DcwFilterPlugin - Change bad dcws into empty newcamd replies (cannot decode) and do some basic analysis.
+230316 01:30:32.159 INFO -> DcwFilterPlugin <- Filtering bad CWs: [00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00]
+230316 01:30:32.162 INFO -> Starting plugin: ProviderIdentPlugin - Extracts provider ident from viaccess and seca ecms.
+230316 01:30:32.162 INFO -> Starting plugin: IrdetoPlugin - Extracts irdeto ch-id from irdeto ecms.
+230316 01:30:32.252 INFO -> NewcamdCws[test1:myprofile] <- Using asynchronous newcamd mode.
+230316 01:30:32.262 INFO -> -= CardServProxy 0.9.0 initialized =-
+230316 01:30:32.263 INFO -> Listening on: [N11112, R11113]
+230316 01:30:32.272 INFO -> CwsConnectorManager <- Starting...
+230316 01:30:32.276 INFO -> Waiting for connection manager to finish one cycle...
+230316 01:30:32.276 INFO -> Ready. Receiving connections...
+230316 01:30:32.282 INFO -> Listen port ready for profile 'myprofile' - N11112
+230316 01:30:32.288 INFO -> Listen port ready for profile 'myprofile' - R11113
+230316 01:30:32.289 INFO -> Listen port ready for profile '*' - E15112
+230316 01:30:33.391 INFO -> CwsConnectorManager <- Saving channel maps and seen data on exit...
+230316 01:30:33.393 INFO -> ProxyConfig <- Stopping 4 loaded plugins...
