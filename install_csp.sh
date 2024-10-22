@@ -8,6 +8,25 @@ check_root() {
     fi
 }
 
+# Função para instalar o Java JRE 9.0.4
+install_java() {
+    echo "Baixando o Java JRE 9.0.4..."
+    wget https://download.oracle.com/java/9/archive/jre-9.0.4_linux-x64_bin.tar.gz -O /tmp/jre-9.0.4_linux-x64.tar.gz
+
+    echo "Extraindo o Java JRE..."
+    mkdir -p /opt/java
+    tar -xzf /tmp/jre-9.0.4_linux-x64.tar.gz -C /opt/java/
+
+    echo "Configurando o Java JRE..."
+    update-alternatives --install /usr/bin/java java /opt/java/jre-9.0.4/bin/java 1
+    update-alternatives --set java /opt/java/jre-9.0.4/bin/java
+
+    echo "Verificando a versão do Java..."
+    java -version
+
+    echo "Java JRE 9.0.4 instalado com sucesso."
+}
+
 # Função para instalar as dependências e compilar o CSP
 install_csp() {
     echo "Atualizando os pacotes..."
@@ -42,6 +61,7 @@ install_csp() {
 # Função principal para execução
 main() {
     check_root
+    install_java
     install_csp
 }
 
