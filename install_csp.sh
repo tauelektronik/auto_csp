@@ -23,12 +23,22 @@ install_java() {
     mkdir -p /opt/java
     tar -xzf /tmp/jre-9.0.4_linux-x64.tar.gz -C /opt/java/
 
+    if [ $? -ne 0 ]; then
+        echo "Erro ao extrair o Java JRE."
+        exit 1
+    fi
+
     echo "Configurando o Java JRE..."
     update-alternatives --install /usr/bin/java java /opt/java/jre-9.0.4/bin/java 1
     update-alternatives --set java /opt/java/jre-9.0.4/bin/java
 
     echo "Verificando a versão do Java..."
     java -version
+
+    if [ $? -ne 0 ]; then
+        echo "Erro ao configurar o Java."
+        exit 1
+    fi
 
     echo "Java JRE 9.0.4 instalado com sucesso."
 }
@@ -41,12 +51,18 @@ install_csp() {
     echo "Instalando as dependências necessárias..."
     apt install -y build-essential cmake libssl-dev libpcap-dev git pkg-config libreadline-dev libncurses5-dev
 
+    # Verificar se o diretório /opt/csp já existe e removê-lo se necessário
+    if [ -d "/opt/csp" ]; then
+        echo "Removendo o diretório /opt/csp existente..."
+        rm -rf /opt/csp
+    fi
+
     echo "Clonando o repositório CSP..."
     git clone https://git.streamboard.tv/common/csp.git /opt/csp
     cd /opt/csp
 
     echo "Iniciando a compilação do CSP..."
-    mkdir build && cd build
+    mkdir -p build && cd build
     cmake ..
     make -j$(nproc)
 
