@@ -1,91 +1,61 @@
 #!/bin/bash
 
-# Função para verificar se o script está sendo executado como root
-check_root() {
-    if [ "$EUID" -ne 0 ]; then 
-        echo "Por favor, execute como root"
-        exit
-    fi
-}
+# Baixando o Java JRE 9.0.4 da Oracle (se você preferir, pode mudar para OpenJDK)
+JAVA_URL="https://download.oracle.com/otn/java/jdk/9.0.4+11/c2514751926b4512b076cc82f959763f/jre-9.0.4_linux-x64_bin.tar.gz"
+JAVA_DIR="/opt/java"
 
-# Função para instalar o Java JRE 9.0.4
-install_java() {
-    echo "Baixando o Java JRE 9.0.4 da Oracle..."
-    wget --no-cookies --no-check-certificate --header "Cookie: oraclelicense=accept-securebackup-cookie" \
-    "https://download.oracle.com/otn/java/jdk/9.0.4+11/c2514751926b4512b076cc82f959763f/jre-9.0.4_linux-x64_bin.tar.gz" -O /tmp/jre-9.0.4_linux-x64.tar.gz
+# Baixar JRE
+echo "Baixando o Java JRE 9.0.4..."
+if wget --no-check-certificate -O /tmp/jre-9.0.4_linux-x64.tar.gz "$JAVA_URL"; then
+    echo "Java JRE baixado com sucesso."
+else
+    echo "Falha ao baixar o Java JRE. Verifique o link."
+    exit 1
+fi
 
-    if [ $? -ne 0 ]; then
-        echo "Erro ao baixar o Java JRE. Verifique o link e tente novamente."
-        exit 1
-    fi
+# Extraindo o Java JRE
+echo "Extraindo o Java JRE..."
+mkdir -p "$JAVA_DIR"
+tar -xzf /tmp/jre-9.0.4_linux-x64.tar.gz -C "$JAVA_DIR" --strip-components=1
 
-    echo "Extraindo o Java JRE..."
-    mkdir -p /opt/java
-    tar -xzf /tmp/jre-9.0.4_linux-x64.tar.gz -C /opt/java/
+# Configurando o Java JRE
+echo "Configurando o Java JRE..."
+update-alternatives --install /usr/bin/java java "$JAVA_DIR/bin/java" 1
+update-alternatives --install /usr/bin/javac javac "$JAVA_DIR/bin/javac" 1
+update-alternatives --install /usr/bin/javaws javaws "$JAVA_DIR/bin/javaws" 1
 
-    if [ $? -ne 0 ]; then
-        echo "Erro ao extrair o Java JRE."
-        exit 1
-    fi
+echo "Verificando a versão do Java..."
+java -version
 
-    echo "Configurando o Java JRE..."
-    update-alternatives --install /usr/bin/java java /opt/java/jre-9.0.4/bin/java 1
-    update-alternatives --set java /opt/java/jre-9.0.4/bin/java
+# Atualizando os pacotes
+echo "Atualizando os pacotes..."
+sudo apt-get update
 
-    echo "Verificando a versão do Java..."
-    java -version
+# Instalando as dependências necessárias
+echo "Instalando as dependências necessárias..."
+sudo apt-get install -y build-essential cmake libssl-dev libpcap-dev git pkg-config libreadline-dev libncurses-dev
 
-    if [ $? -ne 0 ]; then
-        echo "Erro ao configurar o Java."
-        exit 1
-    fi
+# Clonando o repositório CSP
+CSP_DIR="/opt/csp"
+if [ -d "$CSP_DIR" ]; then
+    echo "O diretório $CSP_DIR já existe. Removendo..."
+    sudo rm -rf "$CSP_DIR"
+fi
 
-    echo "Java JRE 9.0.4 instalado com sucesso."
-}
+echo "Clonando o repositório CSP..."
+git clone https://git.streamboard.tv/common/csp.git "$CSP_DIR"
 
-# Função para instalar as dependências e compilar o CSP
-install_csp() {
-    echo "Atualizando os pacotes..."
-    apt update && apt upgrade -y
+# Iniciando a compilação do CSP
+echo "Iniciando a compilação do CSP..."
+cd "$CSP_DIR"
+mkdir build
+cd build
+cmake ..
+make
 
-    echo "Instalando as dependências necessárias..."
-    apt install -y build-essential cmake libssl-dev libpcap-dev git pkg-config libreadline-dev libncurses5-dev
-
-    # Verificar se o diretório /opt/csp já existe e removê-lo se necessário
-    if [ -d "/opt/csp" ]; then
-        echo "Removendo o diretório /opt/csp existente..."
-        rm -rf /opt/csp
-    fi
-
-    echo "Clonando o repositório CSP..."
-    git clone https://git.streamboard.tv/common/csp.git /opt/csp
-    cd /opt/csp
-
-    echo "Iniciando a compilação do CSP..."
-    mkdir -p build && cd build
-    cmake ..
-    make -j$(nproc)
-
-    if [ $? -ne 0 ]; then
-        echo "Erro na compilação do CSP."
-        exit 1
-    fi
-
-    echo "Movendo o binário compilado para /usr/local/bin/..."
-    cp /opt/csp/build/csp /usr/local/bin/csp
-
-    echo "Ajustando permissões..."
-    chmod +x /usr/local/bin/csp
-
-    echo "Instalação do CSP finalizada com sucesso."
-}
-
-# Função principal para execução
-main() {
-    check_root
-    install_java
-    install_csp
-}
-
-# Execução do script
-main
+if [ $? -eq 0 ]; then
+    echo "Compilação do CSP concluída com sucesso."
+else
+    echo "Erro na compilação do CSP."
+    exit 1
+fi
