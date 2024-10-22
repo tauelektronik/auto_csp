@@ -10,8 +10,13 @@ check_root() {
 
 # Função para instalar o Java JRE 9.0.4
 install_java() {
-    echo "Baixando o Java JRE 9.0.4..."
+    echo "Baixando o Java JRE 9.0.4 do MEGA..."
     wget https://mega.nz/file/20ZFDYxb#KUniIEzIybnUNUoX1yNLLffzFewRFfI4e4-XTWay3hk -O /tmp/jre-9.0.4_linux-x64.tar.gz
+
+    if [ $? -ne 0 ]; then
+        echo "Erro ao baixar o Java JRE. Verifique o link e tente novamente."
+        exit 1
+    fi
 
     echo "Extraindo o Java JRE..."
     mkdir -p /opt/java
