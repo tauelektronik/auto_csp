@@ -11,7 +11,7 @@ check_root() {
 # Função para instalar o Java JRE 9.0.4
 install_java() {
     echo "Baixando o Java JRE 9.0.4..."
-    wget https://download.oracle.com/java/9/archive/jre-9.0.4_linux-x64_bin.tar.gz -O /tmp/jre-9.0.4_linux-x64.tar.gz
+    wget https://download.oracle.com/otn/java/jdk/9.0.4+11/c2514751926b4512b076cc82f959763f/jre-9.0.4_linux-x64_bin.tar.gz -O /tmp/jre-9.0.4_linux-x64.tar.gz
 
     echo "Extraindo o Java JRE..."
     mkdir -p /opt/java
